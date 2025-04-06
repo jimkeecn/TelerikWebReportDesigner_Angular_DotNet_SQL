@@ -1,0 +1,58 @@
+<div class="list-container">
+  <div class="action-bar">
+    <button (click)="newReport = !newReport">
+      {{ newReport ? "Show Report List" : "Create New Report" }}
+    </button>
+  </div>
+  <div class="report-list" *ngIf="!newReport">
+    <div class="report-card" *ngFor="let report of reports">
+      <div class="report-card-header">
+        <label>Report Name</label>
+        <p>{{ report.name }}</p>
+      </div>
+      <div class="report-card-body">
+        <label>Report Description</label>
+        <p>{{ report.description ?? "No Description" }}</p>
+      </div>
+      <div class="report-card-footer">
+        <button (click)="onEdit(report)">Edit</button>
+      </div>
+    </div>
+  </div>
+  <div class="new-report" *ngIf="newReport">
+    <h2>New Report</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label for="report-name">Report Name:</label>
+      <input
+        type="text"
+        id="report-name"
+        name="report-name"
+        formControlName="reportName"
+        required
+      />
+
+      <label for="report-type">Report Type:</label>
+      <select
+        id="report-type"
+        name="report-type"
+        formControlName="reportWebService"
+        required
+      >
+        <option value="get_products">Products</option>
+        <option value="get_departments">Departments</option>
+      </select>
+
+      <label for="report-description">Report Description:</label>
+      <textarea
+        id="report-description"
+        name="report-description"
+        formControlName="reportDescription"
+        rows="2"
+        cols="50"
+        required
+      ></textarea>
+
+      <button type="submit">Create Report</button>
+    </form>
+  </div>
+</div>

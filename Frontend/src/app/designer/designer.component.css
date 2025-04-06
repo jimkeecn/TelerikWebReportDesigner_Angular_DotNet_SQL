@@ -1,0 +1,34 @@
+:host {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+.controls {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.report-container {
+  position: relative;
+  height: calc(100% - 80px);
+  width: 100%;
+}
+
+::ng-deep li[data-index="group-Data Sources"] {
+  display: none !important;
+}
+
+::ng-deep.top-menu-area__menu,
+::ng-deep.top-menu-area__switch {
+  display: none !important;
+}
+
+::ng-deep.twd-top-menu-area.twd-designer-parts {
+  display: flex !important;
+  justify-content: space-between !important;
+}

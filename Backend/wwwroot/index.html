@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Telerik Web Report Designer Demo</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
+    <link href="styles/webReportDesigner-17.1.23.718.css" rel="stylesheet" />
+    <link href="styles/webReportDesignerTheme-17.1.23.718.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+        .controls{
+            position:relative;
+            width:100%;
+            display:flex;
+            flex-direction:row;
+            gap:12px;
+            padding:12px;
+            box-sizing:border-box;
+        }
+        .report-container {
+            position: relative;
+            height: calc(100% - 80px);
+            width: 100%;
+        }
+        /*li[data-index="group-Data Sources"]{
+            display:none !important;
+        }*/
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button id="toggleHtmlBoxBtn">Toggle HTMLBox</button>
+        <button id="saveReport">Save</button>
+    </div>
+    <div class="report-container">
+        <div class="k-i-divide"></div>
+        <div id="webReportDesigner" class="container">
+            loading...
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.3.913/js/kendo.all.min.js"></script>
+
+    <script src="/js/webReportDesigner-17.1.23.718.min.js"></script>
+    <script src="js/telerikReportViewer-17.1.23.718.js"></script>
+
+    <script type="text/javascript">
+
+        let accessToken = null;
+        const fetchOverride = window.fetch;
+
+        $(document).ready(function () {
+            login().then(() => {
+                overrideFetchWithAuth(); // inject token into all fetch calls
+                overrideAjaxWithAuth();
+                changePreviewPayload();
+                initDesigner();          // initialize Telerik Designer after login
+            });
+        });
+
+        function login() {
+            return $.ajax({
+                url: "/api/auth/login",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    username: "jimkeecn",
+                    password: "jimkeecn"
+                }),
+                success: function (response) {
+                    accessToken = response.token;
+                },
+                error: function (err) {
+                    console.log(err);
+                    alert("Failed to login.");
+                }
+            });
+        }
+
+        function overrideFetchWithAuth() {
+            console.log(accessToken);
+            /** This pose potential risk of sending bearer token to other source if there are some other 3rd party library is using window fetch */
+            //it is higly recommanded to use the latest function to use 'viewerInitializing' for token injection. it's much safer.
+            window.fetch = function (url, args = {}) {
+                if (args.headers && args.headers instanceof Headers) {
+                    args.headers.append("Authorization", "Bearer " + accessToken);
+                } else {
+                    args.headers = {
+                        ...(args.headers ?? {}),
+                        Authorization: "Bearer " + accessToken
+                    };
+                }
+
+                return fetchOverride(url, args);
+            };
+        }
+
+        function overrideAjaxWithAuth() {
+            $.ajaxSetup({
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+                }
+            });
+        }
+
+        function changePreviewPayload() {
+            const originalFetch = window.fetch;
+
+            window.fetch = async function (url, options = {}) {
+                const isTargetUrl = typeof url === 'string' && url.includes('api/reportdesigner/data/model');
+
+                if (isTargetUrl && options.method?.toUpperCase() === 'POST') {
+                    try {
+                        const originalBody = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
+
+                        if (originalBody?.NetType === 'WebServiceDataSource' && originalBody.DataSource) {
+                            const dataSource = originalBody.DataSource;
+                            dataSource.Parameters = dataSource.Parameters || [];
+
+                            // Ensure authorization parameter exists
+                            let tokenValue = `Bearer ${accessToken}`;
+                            const existingAuthParam = dataSource.Parameters.find(
+                                p => p?.Name?.toLowerCase() === 'authorization'
+                            );
+
+                            if (existingAuthParam) {
+                                existingAuthParam.Value = tokenValue;
+                            } else {
+                                dataSource.Parameters.push({
+                                    Name: "authorization",
+                                    Value: tokenValue,
+                                    WebServiceParameterType: "Header",
+                                    NetType: "WebServiceParameter"
+                                });
+                            }
+
+                            // Inject ParameterValues as stringified JSON
+                            dataSource.ParameterValues = JSON.stringify({
+                                authorization: tokenValue
+                            });
+
+                            // Re-assign modified body back to request
+                            options.body = JSON.stringify(originalBody);
+                            console.log("Modified Payload:", originalBody);
+                        }
+                    } catch (err) {
+                        console.error('Failed to inject auth header into payload:', err);
+                    }
+                }
+
+                return originalFetch.call(this, url, options);
+            };
+        }
+
+        function initDesigner() {
+            const designer = $("#webReportDesigner").telerik_WebReportDesigner({
+                toolboxArea: {
+                    layout: "list"
+                },
+                serviceUrl: "api/reportdesigner/",
+                report: "DepartmentSampleReport.trdp",
+                viewerInitializing: onViewerInitializing //Only support using later than 2024 Q1 18.0.24.305, current version does not support it
+            }).data("telerik_WebReportDesigner");
+
+            console.log("Designer loaded:", designer);
+
+            $('#toggleHtmlBoxBtn').on('click', function () {
+                $("div[title='HtmlTextBox']").toggle();
+            });
+
+            $("#saveReport").on("click", function () {
+                var saveBtn = $('#webReportDesigner').find(
+                    "[data-action='documentSave']"
+                );
+                saveBtn.click();
+            });
+        }
+
+        function onViewerInitializing(e, args) {
+            // optional, if you want to pass token into the viewer directly as well
+            args.reportViewerOptions.authenticationToken = accessToken;
+        }
+
+    </script>
+
+    <script>
+
+    </script>
+
+</body>
+</html>

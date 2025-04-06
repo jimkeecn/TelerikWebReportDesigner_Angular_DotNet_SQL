@@ -1,0 +1,38 @@
+.action-bar {
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.new-report {
+  padding: 12px;
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  button {
+    margin-top: 12px;
+  }
+}
+.report-list {
+  padding: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.report-card {
+  width: 400px;
+  height: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  background-color: #429fd4;
+  color: #fff;
+  p {
+    font-weight: 600;
+  }
+}

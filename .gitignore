@@ -1,0 +1,71 @@
+# ====================================
+# Angular specific
+# ====================================
+node_modules/
+dist/
+.angular/
+.tmp/
+out-tsc/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+
+# VS Code and IDEs
+.vscode/
+.idea/
+
+# Angular environment files (optional, if sensitive)
+src/environments/environment*.ts
+
+# ====================================
+# C# / .NET specific
+# ====================================
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Core secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/appsettings.*.json
+
+# Entity Framework
+Migrations/
+
+# Build results
+*.dll
+*.exe
+*.app
+*.log
+
+# Rider
+.idea/
+
+# dotCover
+*.dotCover
+
+# Visual Studio Code Workspace
+*.code-workspace
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# JetBrains
+.idea/
+
+# SQL Server files
+*.mdf
+*.ldf
+
+# Logs
+logs/
+*.log
+
+# Others
+.env
