@@ -19,7 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddRazorPages()
+builder.Services.AddControllers()
                 .AddNewtonsoftJson();
 
 builder.Services.AddCors(options =>
@@ -83,7 +83,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
 }
 
 using (var serviceScope = app.Services.CreateScope())
@@ -97,7 +96,6 @@ app.UseRouting();
 app.UseCors("AllowAngularDevClient");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

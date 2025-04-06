@@ -15,6 +15,7 @@ yarn-error.log*
 # VS Code and IDEs
 .vscode/
 .idea/
+.vs/
 
 # Angular environment files (optional, if sensitive)
 src/environments/environment*.ts
