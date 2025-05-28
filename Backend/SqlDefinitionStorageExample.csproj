@@ -23,7 +23,7 @@
     <PackageReference Include="Telerik.Reporting.OpenXmlRendering" Version="17.1.23.718" />
     <PackageReference Include="Telerik.Reporting.Services.AspNetCore" Version="17.1.23.718" />
     <PackageReference Include="Telerik.WebReportDesigner.Services" Version="17.1.23.718" />
-	  <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
   <ItemGroup>
     <None Update="SampleReport.trdp">

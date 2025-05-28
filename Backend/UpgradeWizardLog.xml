@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="_UpgradeWizard_Files\UpgradeWizardLog.xslt"?>
+<log>
+  <event>Get project references.</event>
+  <event action="Analyze" type="Success" name="Assembly References" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\SqlDefinitionStorageExample.csproj" />
+  <event action="Analyze" type="Success" name="telerikReportViewer-17.1.23.718.js" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\wwwroot\js\telerikReportViewer-17.1.23.718.js" />
+  <event action="Analyze" type="Success" name="telerikReportViewer-17.1.23.718.min.js" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\wwwroot\js\telerikReportViewer-17.1.23.718.min.js" />
+  <event action="Analyze" type="Success" />
+  <event action="Analyze" type="Success" />
+  <event action="Analyze" type="Success" />
+  <event action="Analyze" type="Success" name="telerikReportViewer-17.1.23.718.css" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\wwwroot\styles\telerikReportViewer-17.1.23.718.css" />
+  <event action="Analyze" type="Success" />
+  <event action="Analyze" type="Success" />
+  <event action="Analyze" type="Success" />
+  <event action="Analyze" type="Success" name="Register Directives" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\wwwroot\index.html" />
+  <event action="Analyze" type="Success" name="Assembly Directives" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\wwwroot\index.html" />
+  <event action="Analyze" type="Success" name="index.html" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\wwwroot\index.html" />
+  <event action="Analyze" type="Success" />
+  <event action="Analyze" type="Success" name="SqlDefinitionStorageExample" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\SqlDefinitionStorageExample.csproj" />
+  <event action="Analyze" type="Success" name="SqlDefinitionStorageExample" path="D:\Personal Projects\TelerikReportWebDesigner\completeExmaple\Backend\SqlDefinitionStorageExample.sln" />
+</log>

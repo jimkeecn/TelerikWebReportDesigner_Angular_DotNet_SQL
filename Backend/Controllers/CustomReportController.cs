@@ -70,7 +70,7 @@ namespace SqlDefinitionStorageExample.Controllers
             var connectionString = connSection.GetValue<string>("connectionString");
             using (IDbConnection db = new SqlConnection(connectionString))
             {
-                var sql = "SELECT [Name],[Description] FROM [WebDesignerStorage].[dbo].[Resources] WHERE [Name] != 'UniqueSampleData20250406.trdp' AND [ParentUri] NOT LIKE 'Resources%'";
+                var sql = "SELECT [Name],[Description] FROM [WebDesignerStorage].[dbo].[Resources] WHERE [Name] != 'SampleReport.trdp' AND [ParentUri] NOT LIKE 'Resources%'";
                 var reports = await db.QueryAsync<ResourceBaseNoEf>(sql);
                 return Ok(reports);
             }
@@ -84,7 +84,7 @@ namespace SqlDefinitionStorageExample.Controllers
 
             using (IDbConnection db = new SqlConnection(connectionString))
             {
-                var sql = "SELECT [Name],[Bytes],[Size],[ParentUri],[Uri],[Description] FROM [WebDesignerStorage].[dbo].[Resources] WHERE Name = 'UniqueSampleData20250406.trdp'";
+                var sql = "SELECT [Name],[Bytes],[Size],[ParentUri],[Uri],[Description] FROM [WebDesignerStorage].[dbo].[Resources] WHERE Name = 'SampleReport.trdp'";
                 var defaultTemplate = await db.QueryAsync<ResourceBaseNoEf>(sql);
 
                 using var originalStream = new MemoryStream(defaultTemplate.FirstOrDefault().Bytes);
@@ -101,21 +101,42 @@ namespace SqlDefinitionStorageExample.Controllers
 
                             var xDoc = XDocument.Parse(xmlContent);
                             XNamespace ns = "http://schemas.telerik.com/reporting/2023/2.1";
-
+                            var reportElement = xDoc.Root;
                             var dataSourcesNode = xDoc.Descendants(ns + "DataSources").FirstOrDefault();
+
+                            if (dataSourcesNode == null)
+                            {
+                                dataSourcesNode = new XElement(ns + "DataSources");
+                                reportElement.AddFirst(dataSourcesNode);
+                            }
+
                             if (dataSourcesNode != null)
                             {
-                                foreach (var ds in dataSourcesNode.Elements(ns + "WebServiceDataSource"))
+                                var webServiceDs = dataSourcesNode.Elements(ns + "WebServiceDataSource").FirstOrDefault();
+                                if (webServiceDs == null)
                                 {
-                                    var serviceUrlAttr = ds.Attribute("ServiceUrl");
-                                    if (serviceUrlAttr != null)
-                                    {
-                                        //Current we are saving aboslute webservice path to the template, however, with some thinkings and custom design
-                                        //we can save the relative path to the template, and based on the enviornment we are in, dynamically change
-                                        //the path in the template on the fly.
-                                        //e.g localhost:15150/api , tst.com/api , uat.com/api 
-                                        serviceUrlAttr.Value = "http://localhost:51864/api/customreport/"+model.ReportWebService; 
-                                    }
+                                    webServiceDs = new XElement(ns + "WebServiceDataSource",
+                                        new XAttribute("Name", "webServiceDataSource1"),
+                                        new XAttribute("ServiceUrl", $"http://localhost:51864/api/customreport/{model.ReportWebService}"),
+                                        new XAttribute("AuthParameterValues", "null"),
+                                        new XAttribute("ParameterValues", "{}"),
+                                        new XElement(ns + "Parameters",
+                                            new XElement(ns + "WebServiceParameter",
+                                                new XAttribute("WebServiceParameterType", "Header"),
+                                                new XAttribute("Name", "authorization"),
+                                                new XElement(ns + "Value",
+                                                    new XElement(ns + "String", "")
+                                                )
+                                            )
+                                        )
+                                    );
+                                    dataSourcesNode.Add(webServiceDs);
+                                }
+                                else
+                                {
+                                    var urlAttr = webServiceDs.Attribute("ServiceUrl");
+                                    if (urlAttr != null)
+                                        urlAttr.Value = $"http://localhost:51864/api/customreport/{model.ReportWebService}";
                                 }
                             }
 
